@@ -19,6 +19,46 @@ Quelques commandes docker utiles :
 
 ## DataOps
 
+Une seule image est utilisée : dossier ETL
+Pour builder l'image :
+```bash
+docker-compose -f docker-compose-etl.yml --env-file ./.env up --build --no-deps 
+```
+
+Adresse ETL : http://localhost:81/docs
+Adresse GreatExpectation : http://localhost:81/great-expectations
+
+Le pipeline s'étend sur 3 niveaux de raffinage de données :
+- raw : données brutes récupérées de différentes API
+- curated : les données sont préparées par des traitements spécifiques
+- refined : les données sont mergées et validées
+
+### Les endpoints
+#### GET /retrieve-raw-weather-data
+Recupère les données brutes de Météo France
+ex : http://localhost:81/retrieve-raw-weather-data?year=2020&start_month=1&end_month=6&dataset_name=2020_01_06
+
+#### GET /retrieve-raw-rte-data
+Recupère les données brutes de RTE
+ex : http://localhost:81/retrieve-raw-rte-data?year=2020&start_month=1&end_month=6&dataset_name=2020_01_06
+
+#### GET /prepare-raw-weather-data
+Prépare les données Météo France
+ex : http://localhost:81/prepare-raw-weather-data?dataset_name=2020_01_06
+
+#### GET /prepare-raw-rte-data
+Prépare les données RTE
+ex : http://localhost:81/prepare-raw-rte-data?dataset_name=2020_01_06
+
+#### GET /merge-curated-data
+Merge nos différentes données pré-traitées
+ex : http://localhost:81/merge-curated-data?dataset_name=2020_01_06
+
+#### GET /validate-refined-data
+Etape de validation des données
+ex : http://localhost:81/validate-refined-data?dataset_name=2020_01_06
+
+
 ## MLOps
 
 ## Monitoring
