@@ -1,0 +1,5 @@
+# temporary dirty solution (this folder should be programmatically generated)
+checkpoints/
+data_docs/
+expectations/
+validations/

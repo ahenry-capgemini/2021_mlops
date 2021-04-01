@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+    etl:
+        build: etl
+        container_name: etl
+        volumes:
+            - ./data/raw:/raw
+            - ./data/curated:/curated
+            - ./data/refined:/refined
+            - ./etl/app/great_expectations:/great_expectations
+        ports:
+            - 81:81
+        expose:
+            - 81
+        networks:
+            - mlflow
+        restart: always
+networks:
+    mlflow:
