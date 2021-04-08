@@ -66,7 +66,7 @@ Pour builder et lancer les containers :
 ```bash
 docker-compose -f docker-compose-training.yml --env-file ./.env up --build --no-deps
 ```
-en rajouter la partie prédiction :
+en rajoutant la partie prédiction :
 ```bash
 docker-compose -f docker-compose-predict.yml --env-file ./.env up --build --no-deps
 ```
@@ -76,6 +76,20 @@ Les urls
 - MLflow : http://0.0.0.0:5000
 - Training_api : http://0.0.0.0:8000/docs
 - Serving_api : http://0.0.0.0:8001/docs
-- locust : http://0.0.0.0:8089/docs
+- locust : http://0.0.0.0:8089
 
 ## Monitoring
+
+On rajoute 3 images pour pouvoir faire le monitoring : Prometheus, Grafana, data_drift_detector
+Pour builder et lancer les containers :
+```bash
+docker-compose -f docker-compose-monitoring_1.yml --env-file ./.env up --build --no-deps
+```
+en rajoutant la partie data_drift_detector :
+```bash
+docker-compose -f docker-compose-monitoring_2.yml --env-file ./.env up --build --no-deps
+
+Les urls
+- Prometheus : http://0.0.0.0:9090/
+- Grafana : http://0.0.0.0:3000/
+- data_drift_detector : http://0.0.0.0:82/
