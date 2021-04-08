@@ -72,10 +72,10 @@ docker-compose -f docker-compose-predict.yml --env-file ./.env up --build --no-d
 ```
 
 Les urls
-- MinIO : http://0.0.0.0:9000/
+- MinIO : http://0.0.0.0:9000
 - MLflow : http://0.0.0.0:5000
 - Training_api : http://0.0.0.0:8000/docs
 - Serving_api : http://0.0.0.0:8001/docs
-- locust : http://0.0.0.0:8089/docs
+- locust : http://0.0.0.0:8089
 
 ## Monitoring
