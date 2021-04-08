@@ -88,6 +88,7 @@ docker-compose -f docker-compose-monitoring_1.yml --env-file ./.env up --build -
 en rajoutant la partie data_drift_detector :
 ```bash
 docker-compose -f docker-compose-monitoring_2.yml --env-file ./.env up --build --no-deps
+```
 
 Les urls
 - Prometheus : http://0.0.0.0:9090/
