@@ -1,0 +1,10 @@
+sklearn
+pandas
+numpy
+requests
+fastapi
+pydantic
+prometheus_fastapi_instrumentator
+prometheus_client
+typing
+uvicorn

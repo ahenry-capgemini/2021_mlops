@@ -1,0 +1,101 @@
+version: "3.7"
+services:
+    etl:
+        build: etl
+        container_name: etl
+        volumes:
+            - ./data/raw:/raw
+            - ./data/curated:/curated
+            - ./data/refined:/refined
+            - ./etl/app/great_expectations:/great_expectations
+        ports:
+            - 81:81
+        expose:
+            - 81
+        networks:
+            - mlflow
+        restart: always
+
+    s3:
+        image: minio/minio
+        container_name: s3
+        volumes:
+            - ./buckets:/data:consistent
+        expose:
+            - 9000
+        ports:
+            - 9000:9000
+        environment:
+            - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+            - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+        command: minio server /data
+        healthcheck:
+            test:
+                ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+            interval: 30s
+            timeout: 20s
+            retries: 3
+        networks:
+            - mlflow
+    db:
+        image: mysql
+        container_name: db
+        command: --innodb_use_native_aio=0
+        environment:
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        networks:
+            - mlflow
+    mlflow:
+        restart: always
+        build: mlflow_server
+        image: mlflow_server
+        container_name: mlflow_server
+        volumes:
+            - ./data/mlflow:/data/
+        ports:
+            - 5000:5000
+        expose:
+            - 5000
+        environment:
+            - MLFLOW_S3_ENDPOINT_URL=http://s3:9000
+            - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
+            - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
+        command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0
+        depends_on:
+            - db
+        links:
+            - db
+            - s3
+        networks:
+            - mlflow
+
+    training_api:
+        build: training_api
+        volumes:
+            - ./data/refined:/mlflow/projects/data/
+        ports:
+            - 8000:8000
+        expose:
+            - 8000
+        environment:
+            - MLFLOW_S3_ENDPOINT_URL=http://s3:9000
+            - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
+            - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
+            - MLFLOW_TRACKING_URI=http://mlflow:5000
+            - ENABLE_METRICS=true
+        links:
+            - mlflow
+            - s3
+            - db
+        depends_on:
+            - mlflow
+        container_name: training_api
+        networks:
+            - mlflow
+        restart: always
+
+networks:
+    mlflow:
