@@ -66,7 +66,7 @@ Pour builder et lancer les containers :
 ```bash
 docker-compose -f docker-compose-training.yml --env-file ./.env up --build --no-deps
 ```
-en rajouter la partie prédiction :
+en rajoutant la partie prédiction :
 ```bash
 docker-compose -f docker-compose-predict.yml --env-file ./.env up --build --no-deps
 ```
