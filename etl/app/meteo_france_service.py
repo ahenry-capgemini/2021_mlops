@@ -1,4 +1,5 @@
 import io
+import gzip
 from typing import Final
 
 import pandas as pd
@@ -21,7 +22,7 @@ class MeteoFranceService:
         for month in range(start_month, end_month + 1):
             resource_url = f"{self.BASE_URL}/synop.{year}{month:02}.csv.gz"
             response = requests.get(resource_url)
-            monthly_df = pd.read_csv(io.StringIO(response.content.decode('utf-8')), sep=";",
+            monthly_df = pd.read_csv(io.StringIO(gzip.decompress(response.content).decode('utf-8')), sep=";",
                                      usecols=self.WEATHER_COLUMNS)
             monthly_df = monthly_df[monthly_df["numer_sta"].isin(self.WEATHER_STATIONS)]
             weather_df.append(monthly_df)
